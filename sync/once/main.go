@@ -1,13 +1,6 @@
-package compare_concurrency
+package main
 
 import "sync"
-
-/*
-* @Author: zouyx
-* @Email: 1003941268@qq.com
-* @Date:   2026 2026/1/8 上午10:27
-* @Package:
- */
 
 func merge(s []int, middle int) {
 	left := append([]int(nil), s[:middle]...)  // 复制左边
@@ -69,35 +62,10 @@ func parallelMergesortV1(s []int) {
 		defer wg.Done()
 		parallelMergesortV1(s[middle:])
 	}()
+
 	wg.Wait()
 	merge(s, middle) // Merges the halves
 }
+func main() {
 
-const threshold = 2048
-
-func parallelMergesortV2(s []int) {
-	if len(s) <= 1 {
-		return
-	}
-	if len(s) <= threshold {
-		sequentialMergesort(s)
-	} else {
-		middle := len(s) / 2
-
-		var wg sync.WaitGroup
-		wg.Add(2)
-
-		go func() { // Spins up the first half of the work in a goroutine
-			defer wg.Done()
-			parallelMergesortV2(s[:middle])
-		}()
-
-		go func() { // Spins up the second half of the work in a goroutine
-			defer wg.Done()
-			parallelMergesortV2(s[middle:])
-		}()
-
-		wg.Wait()
-		merge(s, middle) // Merges the halves
-	}
 }
